@@ -1,60 +1,57 @@
-const tl = gsap.timeline({ repeat: -1 });
+const rand = (a, b) => a + Math.random() * (b - a);
 
-async function loadSvg(svgPath, containerSelector) {
-  const response = await fetch(svgPath);
+async function loadPath(svgPath) {
+  const res = await fetch(svgPath);
+  const text = await res.text();
 
-  if (!response.ok) {
-    throw new Error(`Erro ao carregar SVG: ${svgPath}`);
-  }
+  const doc = new DOMParser().parseFromString(text, "image/svg+xml");
+  return doc.querySelector("path").getAttribute("d");
+}
+  
+async function init() {
+  const back = await loadPath("./water/A-back.svg");
+  const front = await loadPath("./water/A-front.svg");
 
-  const svgContent = await response.text();
+  const wave = document.querySelector("#wave");
 
-  const container = document.querySelector(containerSelector);
+  // estado inicial
+  wave.setAttribute("d", back);
 
-  if (!container) {
-    throw new Error(`Container não encontrado: ${containerSelector}`);
-  }
+  const set_a = [back, front]
 
-  container.insertAdjacentHTML("beforeend", svgContent);
-
-  return container.querySelector("svg");
+  animateWaveSet(set_a, wave)
 }
 
-loadSvg("/assets/waves.svg", "#waves-container")
+init();
+
+function animateWaveSet(set, wave) {
+
+  const tl = gsap.timeline({ repeat: -1 });
+
+  const [back, front] = set;
+
+  c = 1
+  const advBack  = rand(0.6, 0.9) * c;   // back → START_Y
+    const advMid   = rand(0.8, 1.1) * c;   // → MID_Y
+    const advFront = rand(2.2, 2.6) * c;   // → FRONT_Y
+    const dwell    = rand(0.3, 0.5);        // pausa no pico
+    
+
+  tl.to(wave, {    
+    duration: advFront,
+    morphSVG: { shape: front },
+    ease: "power2.out'"
+  })  
   
+  tl.to({}, { duration: dwell });
 
-const tl = gsap.timeline({
-  repeat: -1
-});
+  tl.to(wave, {
+    duration: advFront,
+    morphSVG: { shape: back },
+    ease: "power2.in'"
+  });
 
-tl.to("#wave", {
-  morphSVG: "#wave-mid",
-  duration: 0.8,
-  ease: "power2.out"
-})
+  tl.to({}, { duration: dwell });
 
-.to("#wave", {
-  morphSVG: "#wave-limit",
-  duration: 1.4,
-  ease: "power3.out"
-})
+}
 
-.to({}, {
-  duration: 0.4
-})
-
-.to("#wave", {
-  morphSVG: "#wave-mid",
-  duration: 0.6,
-  ease: "power2.in"
-})
-
-.to("#wave", {
-  morphSVG: "#wave-start",
-  duration: 0.5,
-  ease: "power3.in"
-})
-
-.to({}, {
-  duration: 0.2
-});

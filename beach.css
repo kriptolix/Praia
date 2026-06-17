@@ -1,54 +1,109 @@
-* {
+/* ═══════════════════════════════════════════════════════════════════
+   BEACH WAVE ANIMATION — Styles
+   Camadas: fundo · água · espuma · areia molhada · iluminação · debug
+═══════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  height: 100vh;
+  background: #0a1628;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Georgia', serif;
   overflow: hidden;
-  font-family: sans-serif;
 }
 
+/* ── Scene container ── */
 .scene {
   position: relative;
-  width: 100vw;
-  height: 100vh;
+  width: 960px;
+  height: 540px;  
+  
 }
 
-/* Céu */
+/* ── Sky & beach background ── */
 .sky {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 60%;
-  background: #7ec8ff;
+  inset: 0;
+  background: #87ceeb;
+  height: 180px;
+   
 }
 
-/* Água */
-.water {
+.deep {
   position: absolute;
-  top: 45%;
-  left: 0;
-  width: 100%;
-  height: 40%;
-  overflow: hidden;
+  inset: 0;
+  top: 160px;
+  background: #097098;
+  height: 80px;   
 }
 
-/* SVG ocupa toda água */
-.wave {
+/* ── Water layers ──
+   Anchored top edge = 0; wave body fills downward.
+   GSAP animates translateY to advance the wave onto the beach. */
+.water{
+  position: absolute;
+  top: 280px;
+  width: 450px;
+  height: 800px;
+  perspective: 800px;
+  left: 200px;
+      
+}
+
+#wave {
+  fill: #097098;      /* cor de preenchimento */
+    
+background: #097098;
+transform:
+    rotate(315deg)
+    scale(1.2, 0.55)
+    translateY(-10%);
+}
+
+/* ── Foam edge ── */
+.foam-edge {
+  position: absolute;
+  left: 0;
+  right: 0;
   width: 100%;
   height: 100%;
-  display: block;
+  pointer-events: none;
+  mix-blend-mode: screen;
 }
 
-/* Areia */
+/* ── Foam residual ── */
+.foam-residual {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
 .sand {
   position: absolute;
-  bottom: 0;
-  left: 0;
   width: 100%;
-  height: 30%;
-  background: #f2d16b;
+  height: 100%;
+  z-index: -1;
+  background: #c8aa03;
 }
+/* ── Wet sand ── */
+.wet-sand {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
